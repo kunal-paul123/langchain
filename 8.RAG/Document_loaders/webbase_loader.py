@@ -1,9 +1,32 @@
 from langchain_community.document_loaders import WebBaseLoader
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+from dotenv import load_dotenv
 
-url = "https://en.wikipedia.org/wiki/Cricket"
+load_dotenv()
+
+model = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
+
+url = "https://en.wikipedia.org/wiki/MacBook"
 
 loader = WebBaseLoader(url)
 
 docs = loader.load()
 
-print(docs[0].page_content)
+prompt = PromptTemplate(
+    template="Answer the following question \n {question} from the following text - \n {text}",
+    input_variables=["question", "text"]
+)
+
+parser = StrOutputParser()
+
+chain = prompt | model | parser
+
+result = chain.invoke({
+    "question": "when MacBook is first made?",
+    "text": docs[0].page_content
+})
+
+print(result)
+
