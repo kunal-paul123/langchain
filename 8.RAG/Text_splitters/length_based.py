@@ -14,4 +14,3 @@ splitter = CharacterTextSplitter(
 texts = splitter.split_documents(docs)
 
 print(texts[1])
- 
